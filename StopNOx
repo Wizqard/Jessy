@@ -1,0 +1,79 @@
+package Inlogscherm;
+
+import Gegegevens.Status;
+import jdk.net.SocketFlow;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.*;
+
+import static com.sun.deploy.uitoolkit.ToolkitStore.dispose;
+
+public class Login{
+    private JLabel Inloggen;
+    public  JTextField nummer;
+    private JLabel Wachtwoord;
+    private JPasswordField password;
+    private JCheckBox Onthouden;
+    private JLabel logo;
+    private JPanel mianview;
+    private JButton inlog;
+
+    private String klant;
+    static JFrame frame = new JFrame("UBPrivacy");
+
+    public Login() {
+        inlog.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","Welkom01");
+                    setKlant(nummer.getText());
+                    String pass = password.getText();
+                    String query ="select * from mydb.klant where Klant_ID=? and Klant_Password=?";
+                    PreparedStatement statement = connection.prepareStatement(query);
+                    statement.setString(1, klant);
+                    statement.setString(2, pass);
+                    ResultSet set = statement.executeQuery();
+                    if(set.next()){
+                        frame.setContentPane(new Status().mainview);
+                        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                        frame.pack();
+                        frame.setVisible(true);
+                        frame.setSize(960,720);
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Invalid Login");
+                        nummer.setText(null);
+                        password.setText(null);
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+
+        frame.setContentPane(new Login().mianview);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setSize(400,500);
+    }
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        logo = new JLabel(new ImageIcon("stopNOxlogo.png"));
+    }
+    public String getKlant() {
+        return klant;
+    }
+
+    public void setKlant(String klant) {
+        this.klant = klant;
+    }
+}
