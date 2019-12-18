@@ -1,0 +1,69 @@
+package Gegegevens;
+
+import Inlogscherm.Login;
+import com.mysql.cj.x.protobuf.MysqlxCrud;
+import com.sun.javafx.logging.JFRInputEvent;
+
+import javax.swing.*;
+import javax.xml.transform.Result;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
+
+public class Status {
+    public JPanel mainview;
+    private JLabel Logo;
+    private JButton statusButton;
+    private JLabel Grafiek;
+    private JLabel klantgegevens;
+    private JLabel Naam;
+    private JButton Dag;
+    private JButton Geschiedenis;
+    private JButton Schatting;
+    Login l = new Login();
+
+
+    public Status() {
+        statusButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","Welkom01");
+                    String query = "select Klant_stikstof from mydb.klant where Klant_ID=?;";
+                    PreparedStatement statement = connection.prepareStatement(query);
+                    statement.setString(1, l.getKlant());
+                    ResultSet resultSet = statement.executeQuery();
+                    if(resultSet.next()){
+                        JOptionPane.showMessageDialog(null,"Klant_stikstof");
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        Dag.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame();
+                frame.setContentPane(new Status().Grafiek);
+                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                frame.pack();
+                frame.setVisible(true);
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("UBPrivacy");
+        frame.setContentPane(new Status().mainview);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+        frame.setSize(960,720);
+    }
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        Logo = new JLabel(new ImageIcon("stopNOxlogo.png"));
+        Grafiek = new JLabel(new ImageIcon("grafiek.png"));
+    }
+}
